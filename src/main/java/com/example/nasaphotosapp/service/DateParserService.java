@@ -1,10 +1,13 @@
 package com.example.nasaphotosapp.service;
 
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -17,7 +20,9 @@ public class DateParserService
 
     public List<String> parseDatesFromFile(String filePath) throws IOException
     {
-        List<String> dates = Files.readAllLines(Path.of(filePath));
+        Resource resource = new ClassPathResource(filePath);
+
+        List<String> dates = Files.readAllLines(Paths.get(resource.getURI()));
         List<String> formattedDates = new ArrayList<>();
 
         for (String date : dates)
