@@ -1,6 +1,7 @@
 package com.example.nasaphotosapp.controller;
 
 import com.example.nasaphotosapp.service.MarsRoverService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,16 +21,10 @@ public class MarsRoverController
     }
 
     @PostMapping("/process-dates")
-    public ResponseEntity<List<String>> processDatesFile()
+    public ResponseEntity<List<String>> processDatesFile() throws IOException
     {
-        try
-        {
-            List<String> downloadedImages = marsRoverService.processImagesFromDateFile("dates.txt");
-            return ResponseEntity.ok(downloadedImages);
-        } catch (IOException e)
-        {
-            return ResponseEntity.internalServerError().build();
-        }
+        List<String> downloadedImages = marsRoverService.processImagesFromDateFile("dates.txt");
+        return ResponseEntity.ok(downloadedImages);
     }
 
     @GetMapping("/image/{date}")
