@@ -1,0 +1,20 @@
+<div class="container">
+  <h1>NASA Mars Rover Images</h1>
+
+  <button [disabled]="loading" (click)="processDates()" class="process-button">
+    {{ loading ? 'Processing...' : 'Process Dates File' }}
+  </button>
+
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="images.length > 0" class="images-container">
+    <h2>Downloaded Images</h2>
+    <ul>
+      <li *ngFor="let image of images">
+        {{ image }}
+      </li>
+    </ul>
+  </div>
+</div>
