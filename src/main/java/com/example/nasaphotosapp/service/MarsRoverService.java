@@ -58,6 +58,7 @@ public class MarsRoverService
         }
 
         // For simplicity, just get the first photo
+        // TODO: perhaps in front-end app show imageUrls to look nice
         MarsPhoto photo = response.getPhotos().getFirst();
         String imageUrl = photo.getImg_src();
 
@@ -72,6 +73,7 @@ public class MarsRoverService
             Path destinationPath = directory.resolve(fileName);
 
             // Download the image
+            // TODO: fix this method, it's getting a 301 redirect error - > try using rest client or something instead??
             URL url = new URL(imageUrl);
             Files.copy(url.openStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
 
