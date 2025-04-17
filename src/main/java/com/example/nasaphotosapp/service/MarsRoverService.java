@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,49 +39,51 @@ public class MarsRoverService
 
         for (String date : dates)
         {
-            String image = downloadImageForDate(date);
-            if (image != null)
-            {
-                downloadedImages.add(image);
-            }
+            List<String> imagesForDate = downloadImagesForDate(date);
+            downloadedImages.addAll(imagesForDate);
         }
 
         return downloadedImages;
     }
 
-    public String downloadImageForDate(String date)
+    public List<String> downloadImagesForDate(String date)
     {
         MarsRoverResponse response = nasaApiClient.getMarsRoverPhotos(date);
 
         if (response.getPhotos() == null || response.getPhotos().isEmpty())
         {
-            return null;
+            return List.of();
         }
 
-        // For simplicity, just get the first photo
-        // TODO: perhaps in front-end app show imageUrls to look nice
-        MarsPhoto photo = response.getPhotos().getFirst();
-        String imageUrl = photo.getImg_src();
+        List<String> savedPaths = new ArrayList<>();
 
         try
         {
-            // Create directory if it doesn't exist
-            Path directory = Paths.get(imagesDirectory + "/" + date);
+            Path directory = Paths.get(imagesDirectory, date);
             Files.createDirectories(directory);
 
-            // Extract filename from URL
-            String fileName = getFileNameFromUrl(imageUrl);
-            Path destinationPath = directory.resolve(fileName);
+            for (MarsPhoto photo : response.getPhotos())
+            {
+                String imageUrl = photo.getImg_src();
 
-            // Download the image
-            // TODO: fix this method, it's getting a 301 redirect error - > try using rest client or something instead??
-            URL url = new URL(imageUrl);
-            Files.copy(url.openStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
+                // Workaround for redirect to HTTPS issue
+                imageUrl = imageUrl
+                        .replace("http://mars.jpl.nasa.gov", "https://mars.nasa.gov");
 
-            return destinationPath.toString();
+                String fileName = getFileNameFromUrl(imageUrl);
+                Path destination = directory.resolve(fileName);
+
+                try (InputStream in = new URL(imageUrl).openStream())
+                {
+                    Files.copy(in, destination, StandardCopyOption.REPLACE_EXISTING);
+                    savedPaths.add(destination.toString());
+                }
+            }
+
+            return savedPaths;
         } catch (IOException e)
         {
-            throw new RuntimeException("Failed to download image from: " + imageUrl, e);
+            throw new RuntimeException("Failed to download images for date " + date, e);
         }
     }
 

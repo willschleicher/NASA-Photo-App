@@ -28,12 +28,12 @@ public class MarsRoverController
     }
 
     @GetMapping("/image/{date}")
-    public ResponseEntity<String> downloadImageForDate(@PathVariable String date)
+    public ResponseEntity<List<String>> downloadImageForDate(@PathVariable String date)
     {
-        String downloadedImage = marsRoverService.downloadImageForDate(date);
-        if (downloadedImage != null)
+        List<String> downloadedImages = marsRoverService.downloadImagesForDate(date);
+        if (downloadedImages != null && !downloadedImages.isEmpty())
         {
-            return ResponseEntity.ok(downloadedImage);
+            return ResponseEntity.ok(downloadedImages);
         } else
         {
             return ResponseEntity.notFound().build();
