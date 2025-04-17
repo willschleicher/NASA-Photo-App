@@ -2,7 +2,9 @@ Full stack app to download and display all photos from the Mars Rover API for gi
 
 -App built using Angular 17, Spring Boot 3.4.X, and Java 21.
 
-Back end-instructions: run app using JDK 21 - from here you can edit the dates.txt file in the src/main/resources folder to customize the dates you'd like to download images for
+Back end-instructions:
+- run app using JDK 21
+- from here you can edit the dates.txt file in the src/main/resources folder to customize the dates you'd like to download images for
 - You can also locally call endpoints at http://localhost:8080/api/marsrover/process-dates to process the dates.txt file and download photos, or http://localhost:8080/api/marsrover/image/{{date}} to download photos for a specific date.
 - The photos will save in the front end assets folder in src/frontend/nasa-rover-ui/src/assets/images, grouped by date
 
