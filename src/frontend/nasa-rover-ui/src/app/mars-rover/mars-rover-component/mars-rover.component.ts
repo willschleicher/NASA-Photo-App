@@ -10,30 +10,45 @@ import {NgForOf, NgIf} from "@angular/common";
     NgForOf
   ],
   templateUrl: './mars-rover.component.html',
-  styleUrl: './mars-rover.component.css'
+  styleUrls: ['./mars-rover.component.css']
 })
 export class MarsRoverComponent implements OnInit {
-  images: string[] = [];
+  rawPaths: string[] = [];
+  assetUrls: string[] = [];
   loading = false;
   error: string | null = null;
 
-  constructor(private marsRoverService: MarsRoverService) { }
+  constructor(private marsRoverService: MarsRoverService) {
+  }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+  }
 
   processDates(): void {
     this.loading = true;
     this.error = null;
-
     this.marsRoverService.processDatesFile().subscribe({
-      next: (images) => {
-        this.images = images;
+      next: paths => {
+        this.rawPaths = paths;
+        this.assetUrls = paths.map(p => this.toAssetUrl(p));
         this.loading = false;
       },
-      error: (err) => {
+      error: err => {
         this.error = 'Error processing dates: ' + err.message;
         this.loading = false;
       }
     });
+  }
+
+  private toAssetUrl(fullPath: string): string {
+    // 1) normalize backslashes
+    const unixPath = fullPath.replace(/\\/g, '/');
+    // 2) find "assets/" and grab everything after it
+    const idx = unixPath.indexOf('assets/');
+    if (idx >= 0) {
+      return '/' + unixPath.substring(idx);
+    }
+    // fallback: assume it already is relative to assets
+    return '/assets/' + unixPath;
   }
 }

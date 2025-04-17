@@ -1,7 +1,9 @@
 <div class="container">
   <h1>NASA Mars Rover Images</h1>
 
-  <button [disabled]="loading" (click)="processDates()" class="process-button">
+  <button [disabled]="loading"
+          (click)="processDates()"
+          class="process-button">
     {{ loading ? 'Processing...' : 'Process Dates File' }}
   </button>
 
@@ -9,11 +11,16 @@
     {{ error }}
   </div>
 
-  <div *ngIf="images.length > 0" class="images-container">
+  <div *ngIf="assetUrls.length" class="images-container">
     <h2>Downloaded Images</h2>
     <ul>
-      <li *ngFor="let image of images">
-        {{ image }}
+      <li *ngFor="let url of assetUrls">
+        <!-- original raw path -->
+        <code>{{ rawPaths[assetUrls.indexOf(url)] }}</code>
+        <!-- thumbnail -->
+        <div class="thumb">
+          <img [src]="url" [alt]="url"/>
+        </div>
       </li>
     </ul>
   </div>
